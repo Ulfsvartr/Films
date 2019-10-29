@@ -18,7 +18,13 @@ public class FilmServiceImpl implements FilmService {
 
     @Override
     public List<Film> findByName(String name) throws Exception {
-        return filmRepository.findByName(name);
+        List<Film> filmList = filmRepository.findByName(name);
+        if(!filmList.isEmpty()){
+            return filmRepository.findByName(name);
+        }
+        else{
+            throw new Exception("Фильм не найден!");
+        }
     }
 
     @Override

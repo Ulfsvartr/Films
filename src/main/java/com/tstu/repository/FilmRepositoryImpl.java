@@ -44,7 +44,7 @@ public class FilmRepositoryImpl implements FilmRepository {
     }
 
     @Override
-    public List<Film> findByName(String name) throws Exception {
+    public List<Film> findByName(String name){
         return films.stream()
                 .filter(film -> film.getName().contains(name))
                 .collect(Collectors.toList());
