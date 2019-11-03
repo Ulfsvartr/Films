@@ -11,6 +11,18 @@ import java.util.stream.Collectors;
 public class FilmServiceImpl implements FilmService {
     private FilmRepository filmRepository = FilmRepositoryImpl.getInstance();
 
+    private static FilmService instance;
+
+    private FilmServiceImpl() {
+    }
+
+    public static FilmService getInstance() {
+        if (instance == null) {
+            instance = new FilmServiceImpl();
+        }
+        return instance;
+    }
+
     @Override
     public Film findById(String imdbId) throws Exception {
         return filmRepository.findById(imdbId);

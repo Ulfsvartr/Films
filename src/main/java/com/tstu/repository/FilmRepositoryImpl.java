@@ -1,9 +1,14 @@
 package com.tstu.repository;
 
+import com.tstu.csv.CSVParser;
+import com.tstu.csv.FilmCSV;
+import com.tstu.csv.FilmCSVConverter;
+import com.tstu.exceptions.MovieLibraryException;
 import com.tstu.model.Film;
 import com.tstu.model.FilmType;
 import com.tstu.model.Genre;
 
+import java.io.FileNotFoundException;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.ArrayList;
@@ -16,11 +21,14 @@ public class FilmRepositoryImpl implements FilmRepository {
     private static List<Film> films = new ArrayList<>();
 
     static {
-        films.add(new Film("tt0093058", FilmType.FILM,"Цельнометаллическая оболочка",new ArrayList<>(Arrays.asList(Genre.DRAMA, Genre.WAR)), LocalDate.of(1987, Month.JULY, 10)));
-        films.add(new Film("tt0110912", FilmType.FILM,"Криминальное чтиво",new ArrayList<>(Arrays.asList(Genre.CRIME, Genre.DRAMA)), LocalDate.of(1994, Month.SEPTEMBER, 23)));
-        films.add(new Film("tt0105236", FilmType.FILM,"Бешеные псы",new ArrayList<>(Arrays.asList(Genre.CRIME, Genre.DRAMA,Genre.THRILLER)), LocalDate.of(1992, Month.JANUARY, 21)));
-        films.add(new Film("tt0944947", FilmType.TVSERIAS,"Игра престолов",new ArrayList<>(Arrays.asList(Genre.ACTION, Genre.ADVENTURE,Genre.DRAMA)), LocalDate.of(2011, Month.APRIL, 17)));
-        films.add(new Film("tt2388725", FilmType.SHORT,"Бумажный роман",new ArrayList<>(Arrays.asList(Genre.COMEDY)), LocalDate.of(2012, Month.NOVEMBER, 2)));
+        try {
+            List<FilmCSV> filmsFromFile = CSVParser.getFilmsFromFile("/files/FilmsCSV.csv");
+            for (FilmCSV s : filmsFromFile) {
+                films.add(FilmCSVConverter.convertToFilm(s));
+            }
+        } catch (FileNotFoundException | MovieLibraryException e) {
+            e.printStackTrace();
+        }
     }
 
     private static FilmRepository instance;

@@ -6,5 +6,5 @@ public interface UserRepository {
     User findById(int id) throws Exception;
     User findByUsername(String name) throws Exception;
     boolean existByUsername(String name);
-    User create(User user);
+    User create(User user) throws Exception;
 }

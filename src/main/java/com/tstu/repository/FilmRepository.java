@@ -9,5 +9,4 @@ public interface FilmRepository {
     Film findById(String imdbId) throws Exception;
     List<Film> findByName(String name) throws Exception;
     Film findByDate(LocalDate date) throws Exception;
-
 }

@@ -5,18 +5,20 @@ import com.tstu.model.User;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class UserRepositoryImpl implements UserRepository {
-    private static List<User> users = new ArrayList<>();
+    public static Map<String,User> users = new HashMap<>();
 
 
     static {
-        users.add(new User("Ermak","SSSSS", Role.USER));
-        users.add(new User("BigBoss228","sdf", Role.USER));
-        users.add(new User("Sasha452","CVBH", Role.USER));
-        users.add(new User("Den","adsFG", Role.USER));
-        users.add(new User("Fox","SDFG", Role.USER));
+        users.put("Ermak",new User("Ermak","Ermak", Role.USER));
+        users.put("BigBoss",new User("BigBoss","Big", Role.USER));
+        users.put("Sasha452",new User("Sasha452","Sasha", Role.USER));
+        users.put("Den",new User("Den","den", Role.USER));
+        users.put("Fox",new User("Fox","foxtrot", Role.USER));
     }
 
     private static UserRepository instance;
@@ -33,7 +35,7 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public User findById(int id) throws Exception {
-        return users.stream()
+        return users.values().stream()
                 .filter(user -> user.getId()==id)
                 .findFirst()
                 .orElseThrow(()-> new Exception("Пользователь не найден!"));
@@ -41,21 +43,26 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public User findByUsername(String username) throws Exception {
-        return users.stream()
-                .filter(user -> user.getUsername().equals(username))
-                .findFirst()
-                .orElseThrow(()-> new Exception("Пользователь не найден!"));
+        if(users.containsKey(username)){
+            return users.get(username);
+        }
+        else{
+            throw new Exception("Пользователь не найден!");
+        }
     }
 
     @Override
     public boolean existByUsername(String username) {
-        return users.stream()
-                .anyMatch(user -> user.getUsername().equals(username));
+        return users.containsKey(username);
     }
 
     @Override
-    public User create(User user) {
-        users.add(user);
-        return user;
+    public User create(User user) throws Exception {
+        if (!existByUsername(user.getUsername())) {
+            users.put(user.getUsername(), user);
+            return user;
+        } else {
+            throw new Exception("Пользователь с данным именем уже существует!");
+        }
     }
 }

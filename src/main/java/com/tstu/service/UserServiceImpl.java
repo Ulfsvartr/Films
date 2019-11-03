@@ -9,6 +9,18 @@ import com.tstu.repository.UserRepositoryImpl;
 public class UserServiceImpl implements UserService {
     private UserRepository userRepository = UserRepositoryImpl.getInstance();
 
+    private static UserService instance;
+
+    private UserServiceImpl() {
+    }
+
+    public static UserService getInstance() {
+        if (instance == null) {
+            instance = new UserServiceImpl();
+        }
+        return instance;
+    }
+
     @Override
     public User login(String username, String password) throws Exception {
         User foundUser = userRepository.findByUsername(username);
