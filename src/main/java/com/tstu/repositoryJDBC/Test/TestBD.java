@@ -1,4 +1,4 @@
-package com.tstu.repositoryJDBC;
+package com.tstu.repositoryJDBC.Test;
 
 import java.sql.*;
 

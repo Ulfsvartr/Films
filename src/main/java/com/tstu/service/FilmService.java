@@ -8,11 +8,11 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface FilmService {
-    Film findById(String imdbId) throws Exception;
+   // Film findById(String imdbId) throws Exception;
 
-    List<Film> findByName(String name) throws Exception;
+    List<Film> findFilmList(String name,String imdbId,String type, String genre,String releaseDate) throws Exception;
 
-    Film findByDate(LocalDate date) throws Exception;
+   // Film findByDate(LocalDate date) throws Exception;
 
     Review postReview(Film film, User user, String text, int rating) throws Exception;
 

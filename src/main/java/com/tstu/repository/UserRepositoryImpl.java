@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 public class UserRepositoryImpl implements UserRepository {
-    public static Map<String,User> users = new HashMap<>();
+    private static Map<String,User> users = new HashMap<>();
 
 
     static {

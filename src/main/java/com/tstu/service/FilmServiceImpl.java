@@ -3,13 +3,14 @@ package com.tstu.service;
 import com.tstu.model.*;
 import com.tstu.repository.FilmRepository;
 import com.tstu.repository.FilmRepositoryImpl;
+import com.tstu.repositoryJDBC.FilmRepositoryImplJDBC;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class FilmServiceImpl implements FilmService {
-    private FilmRepository filmRepository = FilmRepositoryImpl.getInstance();
+    private FilmRepository filmRepository = FilmRepositoryImplJDBC.getInstance();
 
     private static FilmService instance;
 
@@ -23,33 +24,31 @@ public class FilmServiceImpl implements FilmService {
         return instance;
     }
 
-    @Override
-    public Film findById(String imdbId) throws Exception {
-        return filmRepository.findById(imdbId);
-    }
+    //@Override
+    //public Film findById(String imdbId) throws Exception {
+    //    return filmRepository.findById(imdbId);
+    //}
 
     @Override
-    public List<Film> findByName(String name) throws Exception {
-        List<Film> filmList = filmRepository.findByName(name);
+    public List<Film> findFilmList(String name,String imdbId,String type, String genre,String releaseDate) throws Exception {
+        List<Film> filmList = filmRepository.findFilmList(name,imdbId,type,genre,releaseDate);
         if(!filmList.isEmpty()){
-            return filmRepository.findByName(name);
+            return filmRepository.findFilmList(name,imdbId,type,genre,releaseDate);
         }
         else{
             throw new Exception("Фильм не найден!");
         }
     }
 
-    @Override
-    public Film findByDate(LocalDate date) throws Exception {
-        return filmRepository.findByDate(date);
-    }
+    //@Override
+    //public Film findByDate(LocalDate date) throws Exception {
+    //    return filmRepository.findByDate(date);
+    //}
 
     @Override
     public Review postReview(Film film, User user, String text, int rating) throws Exception {
         if (user.getRole() == Role.USER) {
-            Review review = new Review(user, text, rating);
-            film.addReview(review);
-            return review;
+            return filmRepository.saveReview(film,user,text,rating);
         } else {
             throw new Exception("Недоступно для данного типа пользователя.");
         }

@@ -17,7 +17,14 @@ public class Review {
         this.text = text;
         this.rating = rating;
         this.date = LocalDate.now();
-        this.id = nextId++;
+    }
+
+    public Review(User author, String text, int rating,int id) {
+        this.author = author;
+        this.text = text;
+        this.rating = rating;
+        this.date = LocalDate.now();
+        this.id=id;
     }
 
     public void setText(String text) {

@@ -34,6 +34,12 @@ public class Film {
         calculateAverageRating();
     }
 
+    public void addReviews(List<Review> reviews)
+    {
+        this.reviews.addAll(reviews);
+        calculateAverageRating();
+    }
+
     public void calculateAverageRating(){
         rating = reviews.stream()
                 .mapToDouble(Review::getRating)

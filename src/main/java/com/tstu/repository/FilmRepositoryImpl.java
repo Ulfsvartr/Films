@@ -4,9 +4,7 @@ import com.tstu.csv.CSVParser;
 import com.tstu.csv.FilmCSV;
 import com.tstu.csv.FilmCSVConverter;
 import com.tstu.exceptions.MovieLibraryException;
-import com.tstu.model.Film;
-import com.tstu.model.FilmType;
-import com.tstu.model.Genre;
+import com.tstu.model.*;
 
 import java.io.FileNotFoundException;
 import java.time.LocalDate;
@@ -43,26 +41,34 @@ public class FilmRepositoryImpl implements FilmRepository {
         return instance;
     }
 
-    @Override
-    public Film findById(String imdbId) throws Exception {
-        return films.stream()
-                .filter(film -> film.getImdbId().equals(imdbId))
-                .findFirst()
-                .orElseThrow(()-> new Exception("Фильм не найден!"));
-    }
+    //@Override
+    //public Film findById(String imdbId) throws Exception {
+    //    return films.stream()
+    //            .filter(film -> film.getImdbId().equals(imdbId))
+    //            .findFirst()
+    //            .orElseThrow(()-> new Exception("Фильм не найден!"));
+    //}
 
     @Override
-    public List<Film> findByName(String name){
+    public List<Film> findFilmList(String name,String imdbId,String type, String genre,String releaseDate){
         return films.stream()
                 .filter(film -> film.getName().contains(name))
                 .collect(Collectors.toList());
     }
 
     @Override
-    public Film findByDate(LocalDate date) throws Exception {
-        return films.stream()
-                .filter(film -> film.getReleaseDate().equals(date))
-                .findAny()
-                .orElseThrow(()-> new Exception("Фильм не найден!"));
+    public Review saveReview(Film film, User user, String text, int rating) {
+        Review review = new Review(user, text, rating);
+        film.addReview(review);
+        return review;
     }
+
+
+    //@Override
+    //public Film findByDate(LocalDate date) throws Exception {
+    //   return films.stream()
+    //            .filter(film -> film.getReleaseDate().equals(date))
+    //            .findAny()
+    //            .orElseThrow(()-> new Exception("Фильм не найден!"));
+    //}
 }

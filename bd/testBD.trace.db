@@ -68,5 +68,5 @@ Invalid value "2" for parameter "parameterIndex" [90008-197]
 	at org.h2.message.DbException.getInvalidValueException(DbException.java:240)
 	at org.h2.jdbc.JdbcPreparedStatement.setParameter(JdbcPreparedStatement.java:1560)
 	at org.h2.jdbc.JdbcPreparedStatement.setString(JdbcPreparedStatement.java:426)
-	at com.tstu.repositoryJDBC.TestBD.testBD(TestBD.java:18)
+	at com.tstu.repositoryJDBC.Test.TestBD.testBD(TestBD.java:18)
 	at com.tstu.App.main(App.java:17)
