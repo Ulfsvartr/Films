@@ -1,29 +1,29 @@
 package com.tstu.model;
 
-import sun.util.resources.LocaleData;
-
+import java.sql.Date;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 public class Review {
-    private int id;
-    private static int nextId = 1;
-    private User author;
+    private long id;
+    private String author;
     private LocalDate date;
     private String text;
     private int rating;
 
     public Review(User author, String text, int rating) {
-        this.author = author;
+        this.author = author.getUsername();
         this.text = text;
         this.rating = rating;
         this.date = LocalDate.now();
     }
 
-    public Review(User author, String text, int rating,int id) {
+    public Review(String author, String text,String date, int rating,long id) {
         this.author = author;
         this.text = text;
         this.rating = rating;
-        this.date = LocalDate.now();
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        this.date = LocalDate.parse(date,dateFormatter);
         this.id=id;
     }
 
@@ -31,7 +31,7 @@ public class Review {
         this.text = text;
     }
 
-    public User getAuthor() {
+    public String getAuthor() {
         return author;
     }
 

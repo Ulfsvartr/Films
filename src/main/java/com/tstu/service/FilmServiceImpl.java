@@ -1,13 +1,15 @@
 package com.tstu.service;
 
-import com.tstu.model.*;
+import com.tstu.exceptions.MovieLibraryError;
+import com.tstu.exceptions.MovieLibraryException;
+import com.tstu.model.Film;
+import com.tstu.model.Review;
+import com.tstu.model.User;
+import com.tstu.model.enums.Role;
 import com.tstu.repository.FilmRepository;
-import com.tstu.repository.FilmRepositoryImpl;
-import com.tstu.repositoryJDBC.FilmRepositoryImplJDBC;
+import com.tstu.repository.jdbc.FilmRepositoryImplJDBC;
 
-import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class FilmServiceImpl implements FilmService {
     private FilmRepository filmRepository = FilmRepositoryImplJDBC.getInstance();
@@ -24,19 +26,19 @@ public class FilmServiceImpl implements FilmService {
         return instance;
     }
 
-    //@Override
-    //public Film findById(String imdbId) throws Exception {
-    //    return filmRepository.findById(imdbId);
-    //}
+    @Override
+    public Film findById(String imdbId) throws Exception {
+        return filmRepository.findById(imdbId)
+                .orElseThrow(() -> new MovieLibraryException(MovieLibraryError.FILM_NOT_FOUND));
+    }
 
     @Override
-    public List<Film> findFilmList(String name,String imdbId,String type, String genre,String releaseDate) throws Exception {
-        List<Film> filmList = filmRepository.findFilmList(name,imdbId,type,genre,releaseDate);
-        if(!filmList.isEmpty()){
-            return filmRepository.findFilmList(name,imdbId,type,genre,releaseDate);
-        }
-        else{
-            throw new Exception("Фильм не найден!");
+    public List<Film> findFilmList(String name, String imdbId, String type, String genre, String releaseDate) throws MovieLibraryException {
+        List<Film> filmList = filmRepository.findFilmList(name, imdbId, type, genre, releaseDate);
+        if (!filmList.isEmpty()) {
+            return filmList;
+        } else {
+            throw new MovieLibraryException(MovieLibraryError.FILM_NOT_FOUND);
         }
     }
 
@@ -46,22 +48,22 @@ public class FilmServiceImpl implements FilmService {
     //}
 
     @Override
-    public Review postReview(Film film, User user, String text, int rating) throws Exception {
+    public Review postReview(Film film, User user, Review review) throws MovieLibraryException {
         if (user.getRole() == Role.USER) {
-            return filmRepository.saveReview(film,user,text,rating);
+            return filmRepository.saveReview(film, user, review);
         } else {
-            throw new Exception("Недоступно для данного типа пользователя.");
+            throw new MovieLibraryException(MovieLibraryError.FORBIDDEN_FOR_CURRENT_USER);
         }
     }
 
     @Override
-    public void deleteReview(Film film, int id, User admin) throws Exception {
+    public void deleteReview(Film film, int id, User admin) throws MovieLibraryException {
         if (admin.getRole() == Role.ADMIN) {
             try {
                 film.getReviews().remove(id - 1);
                 film.calculateAverageRating();
             } catch (Exception e) {
-                throw new Exception("Невенрный id для удаления отзыва.");
+                throw new MovieLibraryException(MovieLibraryError.NOT_CORRECT_REVIEW_ID);
             }
         }
     }
@@ -79,27 +81,4 @@ public class FilmServiceImpl implements FilmService {
         return null;
     }
 
-    @Override
-    public String showFilmDetails(Film film) {
-        String filmDetail = "Название фильма: " + film.getName();
-        filmDetail += "\nIMDB: " + film.getImdbId();
-        filmDetail += "\nТип фильма: " + film.getType().getValue();
-        filmDetail += "\nЖанр: " + film.getGenre().stream()
-                .map(Genre::getValue)
-                .collect(Collectors.joining(", "));
-        filmDetail += "\nДата выхода: " + film.getReleaseDate();
-        filmDetail += "\nРэйтинг: " + film.getRating();
-        return filmDetail;
-    }
-
-    @Override
-    public String showFilmReviews(Film film) {
-        StringBuilder reviews = new StringBuilder();
-        reviews.append("Название фильма: ").append(film.getName()).append("\nРейтинг: ").append(film.getRating()).append("\nОтзывы:\n");
-        int id = 1;
-        for (Review r : film.getReviews()) {
-            reviews.append(id++).append(") ").append(r.getAuthor().getUsername()).append("\n").append(r.getText()).append("\nОценка пользователя: ").append(r.getRating()).append("\n");
-        }
-        return reviews.toString();
-    }
 }

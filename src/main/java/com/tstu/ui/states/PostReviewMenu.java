@@ -1,6 +1,7 @@
 package com.tstu.ui.states;
 
 import com.tstu.model.Film;
+import com.tstu.model.Review;
 import com.tstu.service.FilmService;
 import com.tstu.service.FilmServiceImpl;
 import com.tstu.ui.Commands;
@@ -57,8 +58,10 @@ public class PostReviewMenu implements MenuState {
         String text = in.nextLine();
         System.out.print("Ваша оценка(от 0 до 10):");
         int rating = in.nextInt();
+        Review review = new Review(menu.getCurrentUser(),text,rating);
+        film.addReview(review);
         try {
-            filmService.postReview(film,menu.getCurrentUser(), text,rating);
+            filmService.postReview(film,menu.getCurrentUser(),review);
         } catch (Exception e) {
             e.printStackTrace();
         }

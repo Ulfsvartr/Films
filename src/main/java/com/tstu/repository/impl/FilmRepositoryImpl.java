@@ -1,17 +1,16 @@
-package com.tstu.repository;
+package com.tstu.repository.impl;
 
 import com.tstu.csv.CSVParser;
 import com.tstu.csv.FilmCSV;
-import com.tstu.csv.FilmCSVConverter;
+import com.tstu.repository.FilmRepository;
+import com.tstu.utils.FilmHelper;
 import com.tstu.exceptions.MovieLibraryException;
 import com.tstu.model.*;
 
 import java.io.FileNotFoundException;
-import java.time.LocalDate;
-import java.time.Month;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class FilmRepositoryImpl implements FilmRepository {
@@ -22,7 +21,7 @@ public class FilmRepositoryImpl implements FilmRepository {
         try {
             List<FilmCSV> filmsFromFile = CSVParser.getFilmsFromFile("/files/FilmsCSV.csv");
             for (FilmCSV s : filmsFromFile) {
-                films.add(FilmCSVConverter.convertToFilm(s));
+                films.add(FilmHelper.convertToFilm(s));
             }
         } catch (FileNotFoundException | MovieLibraryException e) {
             e.printStackTrace();
@@ -41,13 +40,12 @@ public class FilmRepositoryImpl implements FilmRepository {
         return instance;
     }
 
-    //@Override
-    //public Film findById(String imdbId) throws Exception {
-    //    return films.stream()
-    //            .filter(film -> film.getImdbId().equals(imdbId))
-    //            .findFirst()
-    //            .orElseThrow(()-> new Exception("Фильм не найден!"));
-    //}
+    @Override
+    public Optional<Film> findById(String imdbId) {
+        return films.stream()
+                .filter(film -> film.getImdbId().equals(imdbId))
+                .findFirst();
+    }
 
     @Override
     public List<Film> findFilmList(String name,String imdbId,String type, String genre,String releaseDate){
@@ -57,8 +55,7 @@ public class FilmRepositoryImpl implements FilmRepository {
     }
 
     @Override
-    public Review saveReview(Film film, User user, String text, int rating) {
-        Review review = new Review(user, text, rating);
+    public Review saveReview(Film film, User user, Review review) {
         film.addReview(review);
         return review;
     }

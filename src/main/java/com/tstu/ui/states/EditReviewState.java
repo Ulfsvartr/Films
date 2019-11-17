@@ -1,7 +1,6 @@
 package com.tstu.ui.states;
 
 import com.tstu.ui.Commands;
-import com.tstu.ui.Menu;
 import com.tstu.ui.MenuState;
 
 import java.util.List;

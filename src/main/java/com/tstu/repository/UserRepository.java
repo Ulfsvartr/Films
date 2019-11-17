@@ -2,9 +2,14 @@ package com.tstu.repository;
 
 import com.tstu.model.User;
 
+import java.util.Optional;
+
 public interface UserRepository {
-    User findById(int id) throws Exception;
-    User findByUsername(String name) throws Exception;
+    Optional<User> findById(int id);
+
+    Optional<User> findByUsername(String name);
+
     boolean existByUsername(String name);
-    User create(User user) throws Exception;
+
+    Optional<User> create(User user);
 }

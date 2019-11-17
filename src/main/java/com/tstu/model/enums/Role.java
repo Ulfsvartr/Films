@@ -1,4 +1,4 @@
-package com.tstu.model;
+package com.tstu.model.enums;
 
 public enum Role {
     ADMIN,

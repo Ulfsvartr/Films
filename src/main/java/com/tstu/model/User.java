@@ -1,9 +1,11 @@
 package com.tstu.model;
 
+import com.tstu.model.enums.Role;
+
 public class User {
 
-    private static int nextId=1;
-    private int id;
+    private static long nextId=1;
+    private long id;
     private String username;
     private String password;
     private Role role;
@@ -15,7 +17,7 @@ public class User {
         this.id=nextId++;
     }
 
-    public User(int id, String username, String password, Role role) {
+    public User(long id, String username, String password, Role role) {
         this.id = id;
         this.username = username;
         this.password = password;

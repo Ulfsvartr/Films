@@ -1,4 +1,4 @@
-package com.tstu.model;
+package com.tstu.model.enums;
 
 import com.tstu.exceptions.MovieLibraryError;
 import com.tstu.exceptions.MovieLibraryException;

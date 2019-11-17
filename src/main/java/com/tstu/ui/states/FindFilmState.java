@@ -61,14 +61,22 @@ public class FindFilmState implements MenuState {
         Scanner in = new Scanner(System.in);
         System.out.print("Введите Imdb фильма:");
         String filmImdb = in.next();
-        return filmService.findFilmList("",filmImdb,"","","").get(0);
+        return filmService.findById(filmImdb);
     }
 
     private List<Film> findFilmByName() throws Exception {
+
+        String filmName=null;
+        String imdbId=null;
+        String type=null;
+        String genre=null;
+        String releaseDate=null;
+
+
         Scanner in = new Scanner(System.in);
         System.out.print("Введите название фильма:");
-        String filmName = in.nextLine();
-        List<Film> films = filmService.findFilmList(filmName,"","","","");
+        filmName = in.nextLine();
+        List<Film> films = filmService.findFilmList(filmName,imdbId,type,genre,releaseDate);
         films.sort((Film o1, Film o2) -> {
             if (o1.getRating() - o2.getRating() < 0) {
                 return -1;

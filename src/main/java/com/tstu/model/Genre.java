@@ -1,35 +1,35 @@
 package com.tstu.model;
 
-import com.tstu.exceptions.MovieLibraryError;
-import com.tstu.exceptions.MovieLibraryException;
+public class Genre {
+    private long id;
+    private String name;
 
-import java.util.Arrays;
-
-public enum Genre {
-    CRIME("Криминал"),
-    DRAMA("Драма"),
-    THRILLER("Триллер"),
-    ACTION("Экшн"),
-    ADVENTURE("Приключенческий"),
-    COMEDY("Комедия"),
-    WAR("Боевик"),
-    DOCUMENTARY("Документальный"),
-    ANIMATION("Анимация");
-
-    private String value;
-
-    public String getValue() {
-        return value;
+    public Genre() {
     }
 
-    Genre(String value) {
-        this.value = value;
+
+    public Genre(String name) {
+        this.name = name;
     }
 
-    public  static Genre getByValue(String value) throws MovieLibraryException {
-        return Arrays.stream(Genre.values())
-                .filter(genre -> genre.getValue().equals(value))
-                .findFirst()
-                .orElseThrow(()->new MovieLibraryException(MovieLibraryError.GENRE_NOT_FOUND));
+    public Genre(long id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

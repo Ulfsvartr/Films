@@ -1,7 +1,7 @@
 package com.tstu.ui.states;
 
-import com.tstu.model.Role;
-import com.tstu.model.UserConstants;
+import com.tstu.model.enums.Role;
+import com.tstu.utils.UserConstants;
 import com.tstu.ui.Commands;
 import com.tstu.ui.Menu;
 import com.tstu.ui.MenuState;

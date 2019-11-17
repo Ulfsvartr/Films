@@ -1,7 +1,6 @@
 package com.tstu.model;
 
-import com.opencsv.bean.CsvCustomBindByName;
-import com.opencsv.bean.CsvDate;
+import com.tstu.model.enums.FilmType;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -11,7 +10,7 @@ public class Film {
     private String imdbId;
     private FilmType type;
     private String name;
-    private List<Genre> genre;
+    private List<Genre> genres;
     private LocalDate releaseDate;
 
     public Film() {
@@ -21,11 +20,11 @@ public class Film {
 
     private List<Review> reviews = new ArrayList<>();
 
-    public Film(String imdbId, FilmType type, String name, List<Genre> genre, LocalDate releaseDate) {
+    public Film(String imdbId, FilmType type, String name, List<Genre> genres, LocalDate releaseDate) {
         this.imdbId = imdbId;
         this.type = type;
         this.name = name;
-        this.genre = genre;
+        this.genres = genres;
         this.releaseDate = releaseDate;
     }
 
@@ -63,8 +62,8 @@ public class Film {
         return name;
     }
 
-    public List<Genre> getGenre() {
-        return genre;
+    public List<Genre> getGenres() {
+        return genres;
     }
 
     public LocalDate getReleaseDate() {
@@ -87,8 +86,8 @@ public class Film {
         this.name = name;
     }
 
-    public void setGenre(List<Genre> genre) {
-        this.genre = genre;
+    public void setGenres(List<Genre> genres) {
+        this.genres = genres;
     }
 
     public void setReleaseDate(LocalDate releaseDate) {
@@ -101,7 +100,7 @@ public class Film {
                 "imdbId='" + imdbId + '\'' +
                 ", type=" + type +
                 ", name='" + name + '\'' +
-                ", genre=" + genre +
+                ", genres=" + genres +
                 ", releaseDate=" + releaseDate +
                 '}';
     }

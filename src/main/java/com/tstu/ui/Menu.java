@@ -1,7 +1,7 @@
 package com.tstu.ui;
 
 import com.tstu.model.User;
-import com.tstu.model.UserConstants;
+import com.tstu.utils.UserConstants;
 import com.tstu.ui.states.MainState;
 
 public class Menu {

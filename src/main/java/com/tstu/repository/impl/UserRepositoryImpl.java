@@ -1,13 +1,12 @@
-package com.tstu.repository;
+package com.tstu.repository.impl;
 
-import com.tstu.model.Role;
 import com.tstu.model.User;
+import com.tstu.model.enums.Role;
+import com.tstu.repository.UserRepository;
 
-import java.awt.*;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class UserRepositoryImpl implements UserRepository {
     private static Map<String,User> users = new HashMap<>();
@@ -34,21 +33,18 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public User findById(int id) throws Exception {
+    public Optional<User> findById(int id) {
         return users.values().stream()
                 .filter(user -> user.getId()==id)
-                .findFirst()
-                .orElseThrow(()-> new Exception("Пользователь не найден!"));
+                .findFirst();
     }
 
     @Override
-    public User findByUsername(String username) throws Exception {
+    public Optional<User> findByUsername(String username) {
         if(users.containsKey(username)){
-            return users.get(username);
+            return Optional.of(users.get(username));
         }
-        else{
-            throw new Exception("Пользователь не найден!");
-        }
+        return Optional.empty();
     }
 
     @Override
@@ -57,12 +53,11 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public User create(User user) throws Exception {
+    public Optional<User> create(User user) {
         if (!existByUsername(user.getUsername())) {
             users.put(user.getUsername(), user);
-            return user;
-        } else {
-            throw new Exception("Пользователь с данным именем уже существует!");
+            return Optional.of(user);
         }
+        return Optional.empty();
     }
 }
