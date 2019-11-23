@@ -1,9 +1,11 @@
 package com.tstu.servlets;
 
+import com.google.gson.Gson;
 import com.tstu.exceptions.MovieLibraryException;
-import com.tstu.model.User;
-import com.tstu.service.UserService;
-import com.tstu.service.UserServiceImpl;
+import com.tstu.model.Film;
+import com.tstu.model.dto.FilmDto;
+import com.tstu.service.FilmService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
@@ -14,12 +16,18 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 
-@WebServlet(name = "loginServlet", urlPatterns = "/user/login")
-public class LoginServlet extends HttpServlet {
+@WebServlet(name = "findFilmServlet", urlPatterns = "/films")
+public class FindFilmServlet extends HttpServlet {
 
     @Autowired
-    private UserService userService;
+    private FilmService filmService;
+    @Autowired
+    private ModelMapper modelMapper;
+    @Autowired
+    private Gson gson;
 
     @Override
     public void init(ServletConfig config) throws ServletException {
@@ -31,12 +39,17 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setCharacterEncoding("UTF-8");
-        String username = req.getParameter("username");
-        String password = req.getParameter("password");
+        String name = req.getParameter("name");
+        String type = req.getParameter("type");
+        String genres = req.getParameter("genres");
+        String imdbId = req.getParameter("imdbId");
+        String date = req.getParameter("releaseDate");
         try {
-            User loginUser = userService.login(username, password);
-            req.getSession().setAttribute("user", loginUser);
-            resp.getWriter().println(req.getSession().getAttribute("user"));
+            List<Film> filmList = filmService.findFilmList(name, imdbId, type, genres, date);
+            List<FilmDto> filmDtoList = filmList.stream().map(film -> modelMapper.map(film, FilmDto.class)).collect(Collectors.toList());
+            resp.setContentType("application/json");
+            String filmJson = gson.toJson(filmDtoList);
+            resp.getWriter().println(filmJson);
         } catch (MovieLibraryException e) {
             System.out.println(e.getMessage());
             resp.setStatus(400);

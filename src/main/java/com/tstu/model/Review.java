@@ -27,6 +27,41 @@ public class Review {
         this.id=id;
     }
 
+    @Override
+    public String toString() {
+        return "Review{" +
+                "id=" + id +
+                ", author='" + author + '\'' +
+                ", date=" + date +
+                ", text='" + text + '\'' +
+                ", rating=" + rating +
+                '}';
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public void setAuthor(String author) {
+        this.author = author;
+    }
+
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDate date) {
+        this.date = date;
+    }
+
+    public void setRating(int rating) {
+        this.rating = rating;
+    }
+
     public void setText(String text) {
         this.text = text;
     }

@@ -5,13 +5,19 @@ import com.tstu.model.enums.Role;
 import com.tstu.repository.UserRepository;
 import com.tstu.utils.DbConstants;
 import com.tstu.utils.UserConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
+@Repository
 public class UserRepositoryImplJDBC implements UserRepository {
 
     private static UserRepository instance;
+
     private Connection connection;
     private PreparedStatement preparedStatement;
 
@@ -68,7 +74,7 @@ public class UserRepositoryImplJDBC implements UserRepository {
     @Override
     public Optional<User> findByUsername(String name) {
 
-        User user = UserConstants.guest;
+        User user = null;
         ResultSet rs = null;
         try {
             connection = DriverManager.getConnection(DbConstants.url, DbConstants.user, DbConstants.password);
@@ -98,12 +104,12 @@ public class UserRepositoryImplJDBC implements UserRepository {
             } catch (Exception e) {
             }
         }
-        return Optional.of(user);
+        return Optional.ofNullable(user);
     }
 
     @Override
     public boolean existByUsername(String name) {
-        return findByUsername(name).isPresent();
+        return this.findByUsername(name).isPresent();
     }
 
     @Override

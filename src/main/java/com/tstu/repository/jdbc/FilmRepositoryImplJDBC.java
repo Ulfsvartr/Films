@@ -7,14 +7,17 @@ import com.tstu.model.User;
 import com.tstu.repository.FilmRepository;
 import com.tstu.utils.DbConstants;
 import com.tstu.utils.FilmHelper;
+import org.springframework.stereotype.Repository;
 
 import java.sql.*;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
+@Repository
 public class FilmRepositoryImplJDBC implements FilmRepository {
 
     private static FilmRepository instance;
+
     private Connection connection;
     private PreparedStatement preparedStatement;
 
@@ -118,29 +121,33 @@ public class FilmRepositoryImplJDBC implements FilmRepository {
     }
 
     @Override
-    public Review saveReview(Film film, User user, Review review) {
-        try {
-            connection = DriverManager.getConnection(DbConstants.url, DbConstants.user, DbConstants.password);
-            preparedStatement = connection.prepareStatement("INSERT INTO reviews(author,text,rating,postDate,film_id) VALUES(?,?,?,?,?)");
-            preparedStatement.setLong(1, user.getId());
-            preparedStatement.setString(2, review.getText());
-            preparedStatement.setInt(3, review.getRating());
-            preparedStatement.setString(4, review.getData().toString());
-            preparedStatement.setString(5, film.getImdbId());
-            int count = preparedStatement.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
+    public Review saveReview(Film film, User user, Review review) throws Exception {
+        if (!reviewExist(user, film.getImdbId())) {
             try {
-                if (preparedStatement != null) preparedStatement.close();
-            } catch (Exception e) {
+                connection = DriverManager.getConnection(DbConstants.url, DbConstants.user, DbConstants.password);
+                preparedStatement = connection.prepareStatement("INSERT INTO reviews(author,text,rating,postDate,film_id) VALUES(?,?,?,?,?)");
+                preparedStatement.setLong(1, user.getId());
+                preparedStatement.setString(2, review.getText());
+                preparedStatement.setInt(3, review.getRating());
+                preparedStatement.setString(4, review.getData().toString());
+                preparedStatement.setString(5, film.getImdbId());
+                int count = preparedStatement.executeUpdate();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    if (preparedStatement != null) preparedStatement.close();
+                } catch (Exception e) {
+                }
+                try {
+                    if (connection != null) connection.close();
+                } catch (Exception e) {
+                }
             }
-            try {
-                if (connection != null) connection.close();
-            } catch (Exception e) {
-            }
+            return review;
+        } else {
+            throw new Exception();
         }
-        return review;
     }
 
 
@@ -227,4 +234,117 @@ public class FilmRepositoryImplJDBC implements FilmRepository {
         }
         return reviews;
     }
+
+    @Override
+    public List<Review> getUserReviews(User user) {
+        List<Review> reviews = new ArrayList<>();
+        ResultSet rs = null;
+        try {
+            connection = DriverManager.getConnection(DbConstants.url, DbConstants.user, DbConstants.password);
+            preparedStatement = connection.prepareStatement("SELECT reviews.id,text,rating,postDate,users.username FROM reviews " +
+                    "INNER JOIN users ON reviews.author = users.id " +
+                    "WHERE author = ? ");
+            preparedStatement.setLong(1, user.getId());
+            rs = preparedStatement.executeQuery();
+            while (rs.next()) {
+                Review review = new Review(
+                        rs.getString("users.username"),
+                        rs.getString("text"),
+                        rs.getString("postDate"),
+                        rs.getInt("rating"),
+                        rs.getLong("reviews.id"));
+                reviews.add(review);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) rs.close();
+            } catch (Exception e) {
+            }
+            try {
+                if (preparedStatement != null) preparedStatement.close();
+            } catch (Exception e) {
+            }
+            try {
+                if (connection != null) connection.close();
+            } catch (Exception e) {
+            }
+        }
+        return reviews;
+    }
+
+    private Boolean reviewExist(User user, String imdbId) {
+        for (Review r : getFilmReviews(imdbId)) {
+            if (r.getAuthor().equals(user.getUsername())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private Boolean userReview(User user, int id) {
+        for (Review r : getUserReviews(user)) {
+            if (r.getId() == id) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public Review updateReview(Film film, User user, Review review) throws Exception {
+        if (reviewExist(user, film.getImdbId())) {
+            try {
+                connection = DriverManager.getConnection(DbConstants.url, DbConstants.user, DbConstants.password);
+                preparedStatement = connection.prepareStatement("UPDATE reviews SET text = ?, rating = ? WHERE author = ? AND film_id = ?");
+                preparedStatement.setString(1, review.getText());
+                preparedStatement.setInt(2, review.getRating());
+                preparedStatement.setLong(3, user.getId());
+                preparedStatement.setString(4, film.getImdbId());
+                int count = preparedStatement.executeUpdate();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    if (preparedStatement != null) preparedStatement.close();
+                } catch (Exception e) {
+                }
+                try {
+                    if (connection != null) connection.close();
+                } catch (Exception e) {
+                }
+            }
+            return review;
+        } else {
+            throw new Exception();
+        }
+    }
+
+    @Override
+    public void deleteReview(User user, int id) throws Exception {
+        if (userReview(user, id)) {
+            try {
+                connection = DriverManager.getConnection(DbConstants.url, DbConstants.user, DbConstants.password);
+                preparedStatement = connection.prepareStatement("DELETE FROM reviews WHERE id = ?");
+                preparedStatement.setLong(1, id);
+                int count = preparedStatement.executeUpdate();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    if (preparedStatement != null) preparedStatement.close();
+                } catch (Exception e) {
+                }
+                try {
+                    if (connection != null) connection.close();
+                } catch (Exception e) {
+                }
+            }
+        } else {
+            throw new Exception();
+        }
+    }
 }
+
+

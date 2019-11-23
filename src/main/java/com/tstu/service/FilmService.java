@@ -1,6 +1,7 @@
 package com.tstu.service;
 
 import com.tstu.exceptions.MovieLibraryException;
+import com.tstu.filters.FilmFilter;
 import com.tstu.model.Film;
 import com.tstu.model.Review;
 import com.tstu.model.User;
@@ -12,15 +13,19 @@ public interface FilmService {
 
     List<Film> findFilmList(String name, String imdbId, String type, String genre, String releaseDate) throws MovieLibraryException;
 
-    // Film findByDate(LocalDate date) throws Exception;
+    List<Film> findAll() throws MovieLibraryException;
+
+    List<Film> findByFilter(FilmFilter filmFilter) throws MovieLibraryException;
 
     Review postReview(Film film, User user, Review review) throws MovieLibraryException;
 
-    void deleteReview(Film film, int id, User admin) throws MovieLibraryException;
+    void deleteReview(int id, User user) throws MovieLibraryException;
 
-    Review editReview(Film film, int id, String editedText, User admin);
+    Review editReview(Film film,User user , Review review);
 
     Film create(Film film);
+
+    List<Review> getUserReviews(User user);
 }
 
 

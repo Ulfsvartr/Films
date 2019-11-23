@@ -7,9 +7,16 @@ import com.tstu.model.enums.Role;
 import com.tstu.repository.UserRepository;
 import com.tstu.repository.jdbc.UserRepositoryImplJDBC;
 import com.tstu.utils.UserConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+import java.util.Objects;
+
+@Service
 public class UserServiceImpl implements UserService {
-    private UserRepository userRepository = UserRepositoryImplJDBC.getInstance();
+
+    @Autowired
+    private UserRepository userRepository;
 
     private static UserService instance;
 
@@ -25,6 +32,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User login(String username, String password) throws MovieLibraryException {
+        if(username == null || password == null)  {
+            throw new MovieLibraryException(MovieLibraryError.USERNAME_OR_PASSWORD_EMPTY);
+        }
         User foundUser = userRepository.findByUsername(username).orElseThrow(() -> new MovieLibraryException(MovieLibraryError.USER_NOT_FOUND));
         if (foundUser.getPassword().equals(password)) {
             return foundUser;

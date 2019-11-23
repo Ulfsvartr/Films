@@ -13,6 +13,12 @@ public interface FilmRepository {
 
     List<Film> findFilmList(String name, String imdbId, String type, String genre, String releaseDate) throws MovieLibraryException;
 
-    Review saveReview(Film film, User user, Review review);
+    Review saveReview(Film film, User user, Review review) throws Exception;
     //Film findByDate(LocalDate date) throws Exception;
+
+    Review updateReview(Film film, User user, Review review) throws Exception;
+
+    void deleteReview(User user, int id) throws Exception;
+
+    List<Review> getUserReviews(User user);
 }

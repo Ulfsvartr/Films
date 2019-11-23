@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class FilmRepositoryImpl implements FilmRepository {
+public class FilmRepositoryImpl {
 
     private static List<Film> films = new ArrayList<>();
 
@@ -33,28 +33,28 @@ public class FilmRepositoryImpl implements FilmRepository {
     private FilmRepositoryImpl() {
     }
 
-    public static FilmRepository getInstance() {
-        if (instance == null) {
-            instance = new FilmRepositoryImpl();
-        }
-        return instance;
-    }
+//    public static FilmRepository getInstance() {
+//        if (instance == null) {
+//            instance = new FilmRepositoryImpl();
+//        }
+//        return instance;
+//    }
 
-    @Override
+//    @Override
     public Optional<Film> findById(String imdbId) {
         return films.stream()
                 .filter(film -> film.getImdbId().equals(imdbId))
                 .findFirst();
     }
 
-    @Override
+//    @Override
     public List<Film> findFilmList(String name,String imdbId,String type, String genre,String releaseDate){
         return films.stream()
                 .filter(film -> film.getName().contains(name))
                 .collect(Collectors.toList());
     }
 
-    @Override
+//    @Override
     public Review saveReview(Film film, User user, Review review) {
         film.addReview(review);
         return review;

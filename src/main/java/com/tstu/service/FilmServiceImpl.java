@@ -2,17 +2,26 @@ package com.tstu.service;
 
 import com.tstu.exceptions.MovieLibraryError;
 import com.tstu.exceptions.MovieLibraryException;
+import com.tstu.filters.FilmFilter;
 import com.tstu.model.Film;
 import com.tstu.model.Review;
 import com.tstu.model.User;
 import com.tstu.model.enums.Role;
 import com.tstu.repository.FilmRepository;
 import com.tstu.repository.jdbc.FilmRepositoryImplJDBC;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.Month;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.stream.Collectors;
 
+@Service
 public class FilmServiceImpl implements FilmService {
-    private FilmRepository filmRepository = FilmRepositoryImplJDBC.getInstance();
+    @Autowired
+    private FilmRepository filmRepository;// = FilmRepositoryImplJDBC.getInstance();
 
     private static FilmService instance;
 
@@ -42,26 +51,51 @@ public class FilmServiceImpl implements FilmService {
         }
     }
 
-    //@Override
-    //public Film findByDate(LocalDate date) throws Exception {
-    //    return filmRepository.findByDate(date);
-    //}
+    @Override
+    public List<Film> findAll() throws MovieLibraryException {
+        return this.findFilmList(null, null, null, null, null);
+    }
+
+    @Override
+    public List<Film> findByFilter(FilmFilter filmFilter) throws MovieLibraryException {
+        return this.findAll().stream()
+                .filter(film -> film.getRating() >= filmFilter.getFromRating() && film.getRating()  <= filmFilter.getToRating())
+                .filter(film -> film.getReleaseDate().isBefore(LocalDate.of(filmFilter.getToYear(), Month.JANUARY, 1))
+                        && film.getReleaseDate().isAfter(LocalDate.of(filmFilter.getFromYear(), Month.JANUARY, 1)))
+                .collect(Collectors.toList());
+
+    }
+
 
     @Override
     public Review postReview(Film film, User user, Review review) throws MovieLibraryException {
         if (user.getRole() == Role.USER) {
-            return filmRepository.saveReview(film, user, review);
+            try {
+                return filmRepository.saveReview(film, user, review);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         } else {
             throw new MovieLibraryException(MovieLibraryError.FORBIDDEN_FOR_CURRENT_USER);
         }
+        return review;
     }
 
     @Override
-    public void deleteReview(Film film, int id, User admin) throws MovieLibraryException {
-        if (admin.getRole() == Role.ADMIN) {
+    public List<Review> getUserReviews(User user) {
+        try {
+            return filmRepository.getUserReviews(user);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public void deleteReview(int id, User user) throws MovieLibraryException {
+        if (user.getRole() == Role.USER) {
             try {
-                film.getReviews().remove(id - 1);
-                film.calculateAverageRating();
+                filmRepository.deleteReview(user,id);
             } catch (Exception e) {
                 throw new MovieLibraryException(MovieLibraryError.NOT_CORRECT_REVIEW_ID);
             }
@@ -69,9 +103,13 @@ public class FilmServiceImpl implements FilmService {
     }
 
     @Override
-    public Review editReview(Film film, int id, String editedText, User admin) {
-        if (admin.getRole() == Role.ADMIN) {
-            film.getReviews().get(id).setText(editedText + "\n Отредактированно Админом.");
+    public Review editReview(Film film,User user , Review editedReview) {
+        if (user.getRole() == Role.USER) {
+            try {
+                filmRepository.updateReview(film,user,editedReview);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         return null;
     }

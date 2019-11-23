@@ -3,14 +3,18 @@ package com.tstu.repository.jdbc;
 import com.tstu.model.Genre;
 import com.tstu.repository.GenreRepository;
 import com.tstu.utils.DbConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 import java.sql.*;
 import java.util.List;
 import java.util.Optional;
 
+@Repository
 public class GenreRepositoryImplJDBC implements GenreRepository {
 
     private static GenreRepository instance;
+
     private Connection connection;
     private PreparedStatement preparedStatement;
 

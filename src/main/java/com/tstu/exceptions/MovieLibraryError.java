@@ -9,7 +9,8 @@ public enum MovieLibraryError {
     FILM_NOT_FOUND("Фильм не найден"),
     PASSWORD_NOT_MATCH("Пароль не совпадает."),
     USERNAME_IS_BUSY("Пользователь с данным именем уже существует."),
-    USER_NOT_FOUND("Пользователь не найден");
+    USER_NOT_FOUND("Пользователь не найден"),
+    USERNAME_OR_PASSWORD_EMPTY("Логин или пароль пустые");
 
     private String value;
 

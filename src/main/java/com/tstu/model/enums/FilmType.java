@@ -10,6 +10,10 @@ public enum FilmType {
     SHORT("Короткометражный фильм"),
     TVSERIAS("Сериал");
 
+    @Override
+    public String toString() {
+        return value;
+    }
 
     private String value;
 
