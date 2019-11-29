@@ -1,15 +1,16 @@
 package controllers;
 
 import com.tstu.exceptions.MovieLibraryException;
-import com.tstu.jsonResp.UserLogin;
+import com.tstu.utils.jsonResp.UserLogin;
 import com.tstu.model.User;
 import com.tstu.service.UserService;
-import com.tstu.utils.UserConstants;
+import com.tstu.utils.ResponseUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
 
 @Path("/restful/user")
 @Produces("application/json")
@@ -21,26 +22,25 @@ public class UserController {
     @Context
     private HttpServletRequest request;
 
-    //public static User currentUser= UserConstants.guest;
-
     @POST
     @Path("/login")
-    public void login(UserLogin userLogin){
+    public Response login(UserLogin userLogin){
         System.out.println(userLogin.toString());
         try {
             User loginUser = userService.login(userLogin.getUsername(), userLogin.getPassword());
             request.getSession().setAttribute("user", loginUser);
-            //currentUser=userService.login(userLogin.getUsername(),userLogin.getPassword());
+            return ResponseUtil.successResponse("Пользователь "+loginUser.getUsername()+" авторизован.");
         } catch (MovieLibraryException e) {
-            e.printStackTrace();
+            return ResponseUtil.badRequestResponse(e);
         }
     }
 
     @GET
     @Path("/logout")
-    public void logout(){
+    public Response logout(){
         User user = (User) request.getSession().getAttribute("user");
         System.out.println(user.getUsername()+" вышел.");
         request.getSession().setAttribute("user", null);
+        return ResponseUtil.successResponse(user.getUsername()+" вышел.");
     }
 }

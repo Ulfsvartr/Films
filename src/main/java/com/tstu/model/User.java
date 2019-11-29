@@ -2,13 +2,29 @@ package com.tstu.model;
 
 import com.tstu.model.enums.Role;
 
-public class User {
+import javax.persistence.*;
+import java.util.List;
 
+@Entity(name="User")
+@Table(name = "users")
+public class User {
     private static long nextId=1;
+    @Id
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+    @Column(name = "username")
     private String username;
+    @Column(name = "password")
     private String password;
+    @Transient
     private Role role;
+
+    @OneToMany(mappedBy = "author")
+    private List<Review> reviews;
+
+    public User() {
+    }
 
     public User(String username, String password, Role role) {
         this.username = username;
@@ -22,6 +38,14 @@ public class User {
         this.username = username;
         this.password = password;
         this.role = role;
+    }
+
+    public User(long id, String username, String password, Role role, List<Review> reviews) {
+        this.id = id;
+        this.username = username;
+        this.password = password;
+        this.role = role;
+        this.reviews=reviews;
     }
 
     public long getId() {
@@ -44,9 +68,7 @@ public class User {
     public String toString() {
         return "User{" +
                 "id=" + id +
-                ", username='" + username + '\'' +
-                ", password='" + password + '\'' +
-                ", role=" + role +
+                ", username='" + username +
                 '}';
     }
 }

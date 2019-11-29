@@ -9,16 +9,17 @@ import java.util.List;
 import java.util.Optional;
 
 public interface FilmRepository {
-    Optional<Film> findById(String imdbId) throws MovieLibraryException;
+    Optional<Film> findById(String imdbId);
 
     List<Film> findFilmList(String name, String imdbId, String type, String genre, String releaseDate) throws MovieLibraryException;
 
-    Review saveReview(Film film, User user, Review review) throws Exception;
+    void saveReview(Film film, User user, Review review) throws MovieLibraryException;
     //Film findByDate(LocalDate date) throws Exception;
+    List<Review> getFilmReviews(String imdbId);
 
-    Review updateReview(Film film, User user, Review review) throws Exception;
+    void updateReview(Film film, User user, Review review) throws MovieLibraryException;
 
-    void deleteReview(User user, int id) throws Exception;
+    void deleteReview(int id) throws MovieLibraryException;
 
     List<Review> getUserReviews(User user);
 }

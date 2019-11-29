@@ -1,11 +1,19 @@
 package com.tstu.model;
 
+import javax.persistence.*;
+
+
+@Entity(name="Genre")
+@Table(name = "genres")
 public class Genre {
+    @Id
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+    @Column(name = "name")
     private String name;
 
-    public Genre() {
-    }
+    public Genre(){}
 
     public Genre(String name) {
         this.name = name;

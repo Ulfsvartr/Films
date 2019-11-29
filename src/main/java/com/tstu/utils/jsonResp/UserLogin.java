@@ -1,4 +1,4 @@
-package com.tstu.jsonResp;
+package com.tstu.utils.jsonResp;
 
 public class UserLogin {
     String username;

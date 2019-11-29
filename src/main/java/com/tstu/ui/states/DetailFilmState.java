@@ -77,7 +77,7 @@ public class DetailFilmState implements MenuState {
     private String showFilmDetails(Film film) {
         String filmDetail = "Название фильма: " + film.getName();
         filmDetail += "\nIMDB: " + film.getImdbId();
-        filmDetail += "\nТип фильма: " + film.getType().getValue();
+        filmDetail += "\nТип фильма: " + film.getType();//.getValue();
         filmDetail += "\nЖанр: " + film.getGenres().stream()
                 .map(Genre::getName)
                 .collect(Collectors.joining(", "));

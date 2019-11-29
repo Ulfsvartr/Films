@@ -1,5 +1,6 @@
 package com.tstu.repository.jdbc;
 
+import com.tstu.exceptions.MovieLibraryError;
 import com.tstu.exceptions.MovieLibraryException;
 import com.tstu.model.Film;
 import com.tstu.model.Review;
@@ -7,13 +8,14 @@ import com.tstu.model.User;
 import com.tstu.repository.FilmRepository;
 import com.tstu.utils.DbConstants;
 import com.tstu.utils.FilmHelper;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-@Repository
+@Component
 public class FilmRepositoryImplJDBC implements FilmRepository {
 
     private static FilmRepository instance;
@@ -37,7 +39,7 @@ public class FilmRepositoryImplJDBC implements FilmRepository {
     }
 
     @Override
-    public Optional<Film> findById(String imdbId) throws MovieLibraryException {
+    public Optional<Film> findById(String imdbId){
         Film film = null;
         ResultSet rs = null;
         try {
@@ -57,10 +59,12 @@ public class FilmRepositoryImplJDBC implements FilmRepository {
                         rs.getString("genre"),
                         rs.getString("releaseDate"),
                         DateTimeFormatter.ISO_LOCAL_DATE);
-                film.addReviews(getFilmReviews(film.getImdbId()));
+                //film.addReviews(getFilmReviews(film.getImdbId()));
             }
         } catch (SQLException e) {
             return Optional.empty();
+        } catch (MovieLibraryException e) {
+            e.printStackTrace();
         } finally {
             try {
                 if (rs != null) rs.close();
@@ -98,7 +102,7 @@ public class FilmRepositoryImplJDBC implements FilmRepository {
                         rs.getString("genre"),
                         rs.getString("releaseDate"),
                         DateTimeFormatter.ISO_LOCAL_DATE);
-                film.addReviews(getFilmReviews(film.getImdbId()));
+                //film.addReviews(getFilmReviews(film.getImdbId()));
                 films.add(film);
             }
         } catch (SQLException e) {
@@ -121,8 +125,7 @@ public class FilmRepositoryImplJDBC implements FilmRepository {
     }
 
     @Override
-    public Review saveReview(Film film, User user, Review review) throws Exception {
-        if (!reviewExist(user, film.getImdbId())) {
+    public void saveReview(Film film, User user, Review review) throws MovieLibraryException{
             try {
                 connection = DriverManager.getConnection(DbConstants.url, DbConstants.user, DbConstants.password);
                 preparedStatement = connection.prepareStatement("INSERT INTO reviews(author,text,rating,postDate,film_id) VALUES(?,?,?,?,?)");
@@ -133,7 +136,7 @@ public class FilmRepositoryImplJDBC implements FilmRepository {
                 preparedStatement.setString(5, film.getImdbId());
                 int count = preparedStatement.executeUpdate();
             } catch (SQLException e) {
-                e.printStackTrace();
+                throw new MovieLibraryException(MovieLibraryError.SQL_QUERY_EXECUTE_ERROR);
             } finally {
                 try {
                     if (preparedStatement != null) preparedStatement.close();
@@ -144,10 +147,6 @@ public class FilmRepositoryImplJDBC implements FilmRepository {
                 } catch (Exception e) {
                 }
             }
-            return review;
-        } else {
-            throw new Exception();
-        }
     }
 
 
@@ -197,7 +196,8 @@ public class FilmRepositoryImplJDBC implements FilmRepository {
         return sql.toString();
     }
 
-    private List<Review> getFilmReviews(String imdbId) {
+    @Override
+    public List<Review> getFilmReviews(String imdbId) {
         List<Review> reviews = new ArrayList<>();
         ResultSet rs = null;
         try {
@@ -208,13 +208,13 @@ public class FilmRepositoryImplJDBC implements FilmRepository {
             preparedStatement.setString(1, imdbId);
             rs = preparedStatement.executeQuery();
             while (rs.next()) {
-                Review review = new Review(
-                        rs.getString("users.username"),
-                        rs.getString("text"),
-                        rs.getString("postDate"),
-                        rs.getInt("rating"),
-                        rs.getLong("reviews.id"));
-                reviews.add(review);
+//                Review review = new Review(
+//                        rs.getString("users.username"),
+//                        rs.getString("text"),
+//                        rs.getString("postDate"),
+//                        rs.getInt("rating"),
+//                        rs.getLong("reviews.id"));
+//                reviews.add(review);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -233,7 +233,7 @@ public class FilmRepositoryImplJDBC implements FilmRepository {
             }
         }
         return reviews;
-    }
+    }//В SD
 
     @Override
     public List<Review> getUserReviews(User user) {
@@ -247,13 +247,13 @@ public class FilmRepositoryImplJDBC implements FilmRepository {
             preparedStatement.setLong(1, user.getId());
             rs = preparedStatement.executeQuery();
             while (rs.next()) {
-                Review review = new Review(
-                        rs.getString("users.username"),
-                        rs.getString("text"),
-                        rs.getString("postDate"),
-                        rs.getInt("rating"),
-                        rs.getLong("reviews.id"));
-                reviews.add(review);
+//                Review review = new Review(
+//                        rs.getString("users.username"),
+//                        rs.getString("text"),
+//                        rs.getString("postDate"),
+//                        rs.getInt("rating"),
+//                        rs.getLong("reviews.id"));
+//                reviews.add(review);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -272,29 +272,10 @@ public class FilmRepositoryImplJDBC implements FilmRepository {
             }
         }
         return reviews;
-    }
-
-    private Boolean reviewExist(User user, String imdbId) {
-        for (Review r : getFilmReviews(imdbId)) {
-            if (r.getAuthor().equals(user.getUsername())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private Boolean userReview(User user, int id) {
-        for (Review r : getUserReviews(user)) {
-            if (r.getId() == id) {
-                return true;
-            }
-        }
-        return false;
-    }
+    }//В SD
 
     @Override
-    public Review updateReview(Film film, User user, Review review) throws Exception {
-        if (reviewExist(user, film.getImdbId())) {
+    public void updateReview(Film film, User user, Review review) throws MovieLibraryException{
             try {
                 connection = DriverManager.getConnection(DbConstants.url, DbConstants.user, DbConstants.password);
                 preparedStatement = connection.prepareStatement("UPDATE reviews SET text = ?, rating = ? WHERE author = ? AND film_id = ?");
@@ -304,7 +285,7 @@ public class FilmRepositoryImplJDBC implements FilmRepository {
                 preparedStatement.setString(4, film.getImdbId());
                 int count = preparedStatement.executeUpdate();
             } catch (SQLException e) {
-                e.printStackTrace();
+                throw new MovieLibraryException(MovieLibraryError.SQL_QUERY_EXECUTE_ERROR);
             } finally {
                 try {
                     if (preparedStatement != null) preparedStatement.close();
@@ -315,22 +296,17 @@ public class FilmRepositoryImplJDBC implements FilmRepository {
                 } catch (Exception e) {
                 }
             }
-            return review;
-        } else {
-            throw new Exception();
-        }
-    }
+    }//В SD
 
     @Override
-    public void deleteReview(User user, int id) throws Exception {
-        if (userReview(user, id)) {
+    public void deleteReview(int id) throws MovieLibraryException{
             try {
                 connection = DriverManager.getConnection(DbConstants.url, DbConstants.user, DbConstants.password);
                 preparedStatement = connection.prepareStatement("DELETE FROM reviews WHERE id = ?");
                 preparedStatement.setLong(1, id);
                 int count = preparedStatement.executeUpdate();
             } catch (SQLException e) {
-                e.printStackTrace();
+                throw new MovieLibraryException(MovieLibraryError.SQL_QUERY_EXECUTE_ERROR);
             } finally {
                 try {
                     if (preparedStatement != null) preparedStatement.close();
@@ -341,10 +317,7 @@ public class FilmRepositoryImplJDBC implements FilmRepository {
                 } catch (Exception e) {
                 }
             }
-        } else {
-            throw new Exception();
-        }
-    }
+    }//В SD
 }
 
 
